@@ -14,6 +14,7 @@ import javax.swing.table.TableModel;
 
 public class MyFunctions {
     private static final MyFunctions myFunctions = new MyFunctions();
+    private static Calendar calendar = Calendar.getInstance();
     
     private MyFunctions() {}
     
@@ -49,8 +50,8 @@ public class MyFunctions {
         if (name.length() > 3) {
             if ( checkAccount(name) ){
                 try {
-                    Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
-                    String accountID = name.substring(0,3) + sdfa.format(Calendar.getInstance().getTime());
+                    calendar.setTimeInMillis(System.currentTimeMillis());
+                    String accountID = name.substring(0,3) + sdfa.format(calendar.getTime());
                     SQL.runSQL("INSERT INTO ACCOUNTS VALUES('" + accountID + "', '" + name + "', '" + address + "', '" + contact + "', '" + email + "')");
 
                     try {
@@ -92,7 +93,7 @@ public class MyFunctions {
     
     public static void addTransaction(String transactionDate, String toAccount, String fromAccount, String amount, String note){
         SimpleDateFormat sdft = new SimpleDateFormat("YYMMDDHHmmss");
-        Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
+        calendar.setTimeInMillis(System.currentTimeMillis());
         String toID = "";
         String fromID = "";
         String anonName = "";
@@ -115,7 +116,7 @@ public class MyFunctions {
         
         try {
             SQL.runSQL("INSERT INTO TRANSACTIONS VALUES('" 
-                    + sdft.format(Calendar.getInstance().getTime()) + "', " 
+                    + sdft.format(calendar.getTime()) + "', " 
                     + "TO_DATE ('" + transactionDate + "', 'DDMMYYYY'), '" 
                     + toID + "', '" 
                     + fromID + "', '" 
@@ -179,11 +180,11 @@ public class MyFunctions {
         int startYear = -5;
         int endYear = 5;
         
-        Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
+        calendar.setTimeInMillis(System.currentTimeMillis());
         tmpDComboBoxModel.removeAllElements();
         
         for ( int cbxStart = startYear ; cbxStart < endYear ; cbxStart++){
-            tmpDComboBoxModel.addElement(Calendar.getInstance().get(Calendar.YEAR) + cbxStart);
+            tmpDComboBoxModel.addElement(calendar.get(Calendar.YEAR) + cbxStart);
         }
         tmpComboBoxModel = tmpDComboBoxModel;
         return tmpComboBoxModel;
@@ -193,12 +194,12 @@ public class MyFunctions {
         DefaultComboBoxModel tmpDComboBoxModel = new DefaultComboBoxModel();
         ComboBoxModel tmpComboBoxModel;
         
-        Calendar.getInstance().set(Calendar.YEAR, selectedYear);
-        Calendar.getInstance().set(Calendar.MONTH, selectedMonth);
+        calendar.set(Calendar.YEAR, selectedYear);
+        calendar.set(Calendar.MONTH, selectedMonth);
         
-        int daysOfMonth = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
+        int daysOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
         
-        Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
+        calendar.setTimeInMillis(System.currentTimeMillis());
         
         tmpDComboBoxModel.removeAllElements();
         for ( int cbxStart = 0 ; cbxStart < daysOfMonth ; cbxStart++){   
@@ -210,9 +211,9 @@ public class MyFunctions {
     }
     
     public ComboBoxModel populateDays(){
-        Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
-        int selectedYear = Calendar.getInstance().get(Calendar.YEAR);
-        int selectedMonth = Calendar.getInstance().get(Calendar.MONTH);
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        int selectedYear = calendar.get(Calendar.YEAR);
+        int selectedMonth = calendar.get(Calendar.MONTH);
         return repopulateDays(selectedYear, selectedMonth);
     } 
 }

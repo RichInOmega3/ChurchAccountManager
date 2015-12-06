@@ -28,6 +28,7 @@ public class Home extends javax.swing.JFrame {
         accountsTable = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         transactionsTable = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
 
         jLabel1.setText("jLabel1");
 
@@ -88,6 +89,13 @@ public class Home extends javax.swing.JFrame {
 
         viewTables.setSelectedIndex(1);
 
+        jButton1.setText("test");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -107,6 +115,10 @@ public class Home extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(searchTargetButton)))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(104, 104, 104))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -120,7 +132,8 @@ public class Home extends javax.swing.JFrame {
                     .addComponent(addButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(viewTables, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
-                .addGap(29, 29, 29))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1))
         );
 
         pack();
@@ -143,8 +156,7 @@ public class Home extends javax.swing.JFrame {
                 + "FROM ACCOUNTS LEFT JOIN TRANSACTIONS "
                 + "ON ACCOUNTS.accountID = TRANSACTIONS.toID "
                 + "GROUP BY ACCOUNTS.accountID, ACCOUNTS.accountName, ACCOUNTS.address, ACCOUNTS.contact, ACCOUNTS.email");
-        } catch(Exception e){ System.out.println(e); }  
-        System.out.println("Table has: " + accountsTableModel.getRowCount() + "rows");
+        } catch(Exception e){ System.out.println(e); }
         return accountsTableModel;
     }
    
@@ -165,17 +177,17 @@ public class Home extends javax.swing.JFrame {
         return transactionsTableModel;
     }
     
-    public void setAccountsTable() {
+    public void updateAccountsTable() {
         accountsTable.setModel(getAccountsModel());
-        System.out.println("table set");
     }
     
-    public void setTransactionsTable() {
+    public void updateTransactionsTable() {
         transactionsTable.setModel(getTransactionsModel());
     }
     
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         // TODO add your handling code here:
+        updateAccountsTable();
         if(selectedTable == 0)
             AccountAddEdit.execAddInstance();
         else
@@ -197,9 +209,9 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
         myFunctions.deleteTarget (selectedTable, target);
         if(selectedTable == 0)
-            setAccountsTable();
+            updateAccountsTable();
         else
-            setTransactionsTable();
+            updateTransactionsTable();
         editButton.setEnabled(false);
         deleteButton.setEnabled(false);
     }//GEN-LAST:event_deleteButtonActionPerformed
@@ -234,6 +246,11 @@ public class Home extends javax.swing.JFrame {
             deleteButton.setEnabled(true);
         }
     }//GEN-LAST:event_accountsTableMouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        updateAccountsTable();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -271,6 +288,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JButton addButton;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton editButton;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
