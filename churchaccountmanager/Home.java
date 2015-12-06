@@ -8,6 +8,8 @@ public class Home extends javax.swing.JFrame {
     private static Home home = new Home();   
     private Home() {
         initComponents();
+        updateAccountsTable();
+        updateTransactionsTable();
     }
     public static Home getInstance() {
         return home;
@@ -28,7 +30,6 @@ public class Home extends javax.swing.JFrame {
         accountsTable = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         transactionsTable = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
 
         jLabel1.setText("jLabel1");
 
@@ -67,7 +68,6 @@ public class Home extends javax.swing.JFrame {
         });
 
         accountsTable.setAutoCreateRowSorter(true);
-        accountsTable.setModel(getAccountsModel());
         accountsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 accountsTableMouseClicked(evt);
@@ -77,7 +77,6 @@ public class Home extends javax.swing.JFrame {
 
         viewTables.addTab("Accounts", jScrollPane1);
 
-        transactionsTable.setModel(getTransactionsModel());
         transactionsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 transactionsTableMouseClicked(evt);
@@ -88,13 +87,6 @@ public class Home extends javax.swing.JFrame {
         viewTables.addTab("Transactions", jScrollPane2);
 
         viewTables.setSelectedIndex(1);
-
-        jButton1.setText("test");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -115,10 +107,6 @@ public class Home extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(searchTargetButton)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(104, 104, 104))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -132,18 +120,16 @@ public class Home extends javax.swing.JFrame {
                     .addComponent(addButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(viewTables, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1))
+                .addGap(29, 29, 29))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
    
-    private final MyFunctions myFunctions = MyFunctions.getInstance(); 
     private String target = "";
     private int selectedTable = 1;
     
-    private TableModel getAccountsModel() {
+    public void updateAccountsTable() {
         TableModel accountsTableModel = new DefaultTableModel();
         try{            
             accountsTableModel = SQL.requestTableData("SELECT "
@@ -157,10 +143,10 @@ public class Home extends javax.swing.JFrame {
                 + "ON ACCOUNTS.accountID = TRANSACTIONS.toID "
                 + "GROUP BY ACCOUNTS.accountID, ACCOUNTS.accountName, ACCOUNTS.address, ACCOUNTS.contact, ACCOUNTS.email");
         } catch(Exception e){ System.out.println(e); }
-        return accountsTableModel;
+        accountsTable.setModel(accountsTableModel);
     }
    
-    private TableModel getTransactionsModel() { 
+    public void updateTransactionsTable() { 
         TableModel transactionsTableModel = new DefaultTableModel();
         try {    
             transactionsTableModel = SQL.requestTableData("SELECT "
@@ -174,44 +160,41 @@ public class Home extends javax.swing.JFrame {
                 + "FROM TRANSACTIONS LEFT JOIN ACCOUNTS "
                 + "ON TRANSACTIONS.toID = ACCOUNTS.accountID OR TRANSACTIONS.fromID = ACCOUNTS.accountID") ;
         }catch(Exception e){ System.out.println(e); }
-        return transactionsTableModel;
-    }
-    
-    public void updateAccountsTable() {
-        accountsTable.setModel(getAccountsModel());
-    }
-    
-    public void updateTransactionsTable() {
-        transactionsTable.setModel(getTransactionsModel());
+        transactionsTable.setModel(transactionsTableModel);
     }
     
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         // TODO add your handling code here:
-        updateAccountsTable();
-        if(selectedTable == 0)
-            AccountAddEdit.execAddInstance();
-        else
-            TransactionAddEdit.execAddInstance();        
+        switch(selectedTable){
+            case 0: AccountAddEdit.execAddInstance(); break;
+            case 1: TransactionAddEdit.execAddInstance(); break;
+        }      
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         // TODO add your handling code here:
         if(!target.equals(""))
-            if (selectedTable == 0)
-                AccountAddEdit.execEditInstance(target);
-            else
-                TransactionAddEdit.execEditInstance(target);
+            switch(selectedTable){
+                case 0: AccountAddEdit.execEditInstance(target); break;
+                case 1: TransactionAddEdit.execEditInstance(target); break;
+            }
+                
         editButton.setEnabled(false);
         deleteButton.setEnabled(false);
     }//GEN-LAST:event_editButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // TODO add your handling code here:
-        myFunctions.deleteTarget (selectedTable, target);
-        if(selectedTable == 0)
-            updateAccountsTable();
-        else
-            updateTransactionsTable();
+        switch (selectedTable) {
+            case 0:
+                MyFunctions.deleteAccount(target);
+                updateAccountsTable();
+                break;
+            case 1:
+                MyFunctions.deleteTransaction(target);
+                updateTransactionsTable();
+                break;
+        }        
         editButton.setEnabled(false);
         deleteButton.setEnabled(false);
     }//GEN-LAST:event_deleteButtonActionPerformed
@@ -246,11 +229,6 @@ public class Home extends javax.swing.JFrame {
             deleteButton.setEnabled(true);
         }
     }//GEN-LAST:event_accountsTableMouseClicked
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        updateAccountsTable();
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -288,7 +266,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JButton addButton;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton editButton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

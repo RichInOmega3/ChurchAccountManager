@@ -13,16 +13,11 @@ import javax.swing.table.TableModel;
 
 
 public class MyFunctions {
-    private static final MyFunctions myFunctions = new MyFunctions();
-    private static Calendar calendar = Calendar.getInstance();
+    private static final Calendar calendar = Calendar.getInstance();
     
     private MyFunctions() {}
-    
-    public static MyFunctions getInstance() {
-        return myFunctions;
-    }
 
-    private static boolean checkAccount(String accountName) {
+    private static boolean isAccountExists(String accountName) {
         try {
             return ( 0 == SQL.requestTableData("SELECT "
                     + "ACCOUNTS.accountName FROM ACCOUNTS "
@@ -32,7 +27,7 @@ public class MyFunctions {
         return false;
     }
         
-    private static boolean checkAccount(String accountID, String accountName) {
+    private static boolean isAccountExists(String accountID, String accountName) {
         try {
             return ( 0 == SQL.requestTableData("SELECT "
                     + "ACCOUNTS.accountName FROM ACCOUNTS "
@@ -48,7 +43,7 @@ public class MyFunctions {
         SimpleDateFormat sdfa = new SimpleDateFormat("mmss");
 
         if (name.length() > 3) {
-            if ( checkAccount(name) ){
+            if ( MyFunctions.isAccountExists(name) ){
                 try {
                     calendar.setTimeInMillis(System.currentTimeMillis());
                     String accountID = name.substring(0,3) + sdfa.format(calendar.getTime());
@@ -75,7 +70,7 @@ public class MyFunctions {
     }
 
     public static void editAccount(String oldName, String accountID, String newName, String address, String contact, String email) {
-        if( checkAccount (accountID, newName) ) {
+        if( isAccountExists (accountID, newName) ) {
             try{ 
                 SQL.runSQL("UPDATE ACCOUNTS SET "
                           + "ACCOUNTS.accountName = '" + newName + "', "
@@ -133,29 +128,31 @@ public class MyFunctions {
         } catch (Exception  e){ System.out.println(e); }
     }
 
-    public void deleteTarget( int table, String target ) {
+    public static void deleteTransaction(String target ) {
+        if (JOptionPane.showConfirmDialog(null, "Confirm Delete","Deleting ID: " + target, JOptionPane.YES_NO_OPTION) == 0) {
+            try {
+                SQL.runSQL("DELETE FROM TRANSACTIONS WHERE TRANSACTIONS.transactionID = '" + target + "'");
+            }catch(Exception e){ System.out.println("TRANSACTION ID ERROR: " + e); }
+
+            JOptionPane.showMessageDialog(null, "Record Deleted.", "RECORD DELETED", JOptionPane.PLAIN_MESSAGE);
+        }
+    }
+    
+    public static void deleteAccount(String target) {
         if (target.equals("Anonymous"))
             JOptionPane.showMessageDialog(null, "SYSTEM ACCOUNT!", "CANNOT DELETE ACCOUNT", JOptionPane.WARNING_MESSAGE);
         else {
-            if (JOptionPane.showConfirmDialog(null,"Confirm Delete","Deleting ID: " + target, JOptionPane.YES_NO_OPTION) == 0) {   
-                if ( table == 0 ) 
-                    try {
+            if (JOptionPane.showConfirmDialog(null,"Confirm Delete","Deleting ID: " + target, JOptionPane.YES_NO_OPTION) == 0) {
+                try {
                         SQL.runSQL("UPDATE TRANSACTIONS SET TRANSACTIONS.toID = 'Anonymous' WHERE TRANSACTIONS.toID = '" + target + "'");
                         SQL.runSQL("UPDATE TRANSACTIONS SET TRANSACTIONS.fromID = 'Anonymous' WHERE TRANSACTIONS.fromID = '" + target + "'");
-
                         SQL.runSQL("DELETE FROM ACCOUNTS WHERE ACCOUNTS.accountID = '" + target + "'");
-                    } catch(Exception e){ System.out.println("ACCOUNT ID ERROR: " + e); }
-                else {
-                    try {
-                        SQL.runSQL("DELETE FROM TRANSACTIONS WHERE TRANSACTIONS.transactionID = '" + target + "'");
-                    }catch(Exception e){ System.out.println("TRANSACTION ID ERROR: " + e); }
-                }
-                JOptionPane.showMessageDialog(null, "Record Deleted.", "RECORD DELETED", JOptionPane.PLAIN_MESSAGE);
+                } catch(Exception e){ System.out.println("ACCOUNT ID ERROR: " + e); }
             }
-        }   
+        }
     }
     
-    public ComboBoxModel populateAccounts(){
+    public static ComboBoxModel populateAccounts(){
         DefaultComboBoxModel tmpDComboBoxModel = new DefaultComboBoxModel();
         ComboBoxModel tmpComboBoxModel;
         TableModel tmpTableModel = new DefaultTableModel();
@@ -173,7 +170,7 @@ public class MyFunctions {
         return tmpComboBoxModel;  
     }
     
-    public ComboBoxModel populateYears(){
+    public static ComboBoxModel getYearsModel(){
         DefaultComboBoxModel tmpDComboBoxModel = new DefaultComboBoxModel();
         ComboBoxModel tmpComboBoxModel;
             
@@ -190,7 +187,7 @@ public class MyFunctions {
         return tmpComboBoxModel;
     }
     
-    public ComboBoxModel repopulateDays(int selectedYear, int selectedMonth){
+    public static ComboBoxModel getDaysModel(int selectedYear, int selectedMonth){
         DefaultComboBoxModel tmpDComboBoxModel = new DefaultComboBoxModel();
         ComboBoxModel tmpComboBoxModel;
         
@@ -210,10 +207,10 @@ public class MyFunctions {
         return tmpComboBoxModel;
     }
     
-    public ComboBoxModel populateDays(){
+    public static ComboBoxModel getDaysModel(){
         calendar.setTimeInMillis(System.currentTimeMillis());
         int selectedYear = calendar.get(Calendar.YEAR);
         int selectedMonth = calendar.get(Calendar.MONTH);
-        return repopulateDays(selectedYear, selectedMonth);
+        return MyFunctions.getDaysModel(selectedYear, selectedMonth);
     } 
 }

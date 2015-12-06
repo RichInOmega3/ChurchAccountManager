@@ -7,8 +7,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 public class TransactionAddEdit extends javax.swing.JFrame {
-    
-    MyFunctions myFunctions = MyFunctions.getInstance();
         
     static String transactionID;
     
@@ -97,18 +95,13 @@ public class TransactionAddEdit extends javax.swing.JFrame {
         jToggleButton1.setText("jToggleButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
 
         jLabel1.setText("To: ");
 
         toAccount.setEditable(true);
-        toAccount.setModel(myFunctions.populateAccounts());
+        toAccount.setModel(MyFunctions.populateAccounts());
 
-        days.setModel(myFunctions.populateDays());
+        days.setModel(MyFunctions.getDaysModel());
 
         months.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
         months.addActionListener(new java.awt.event.ActionListener() {
@@ -117,7 +110,7 @@ public class TransactionAddEdit extends javax.swing.JFrame {
             }
         });
 
-        years.setModel(myFunctions.populateYears());
+        years.setModel(MyFunctions.getYearsModel());
         years.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 yearsActionPerformed(evt);
@@ -129,7 +122,7 @@ public class TransactionAddEdit extends javax.swing.JFrame {
         jLabel3.setText("From: ");
 
         fromAccount.setEditable(true);
-        fromAccount.setModel(myFunctions.populateAccounts());
+        fromAccount.setModel(MyFunctions.populateAccounts());
 
         acceptButton.setText("Accept");
         acceptButton.addActionListener(new java.awt.event.ActionListener() {
@@ -246,22 +239,18 @@ public class TransactionAddEdit extends javax.swing.JFrame {
             MyFunctions.editTransaction(transactionID, date, toAccount.getSelectedItem().toString(), fromAccount.getSelectedItem().toString(), amount.getText(), note.getText());
     }//GEN-LAST:event_acceptButtonActionPerformed
 
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        // TODO add your handling code here:
-    }//GEN-LAST:event_formWindowOpened
-
     private void monthsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monthsActionPerformed
         // TODO add your handling code here:
         int selectedYear = Integer.parseInt(years.getSelectedItem().toString());
         int selectedMonth = months.getSelectedIndex();       
-        days.setModel(myFunctions.repopulateDays( selectedYear, selectedMonth ));
+        days.setModel(MyFunctions.getDaysModel( selectedYear, selectedMonth ));
     }//GEN-LAST:event_monthsActionPerformed
 
     private void yearsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yearsActionPerformed
         // TODO add your handling code here:
         int selectedYear = Integer.parseInt(years.getSelectedItem().toString());
         int selectedMonth = months.getSelectedIndex();
-        days.setModel(myFunctions.repopulateDays( selectedYear, selectedMonth ));
+        days.setModel(MyFunctions.getDaysModel( selectedYear, selectedMonth ));
     }//GEN-LAST:event_yearsActionPerformed
 
     /**
