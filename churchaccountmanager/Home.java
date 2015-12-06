@@ -143,7 +143,8 @@ public class Home extends javax.swing.JFrame {
                 + "FROM ACCOUNTS LEFT JOIN TRANSACTIONS "
                 + "ON ACCOUNTS.accountID = TRANSACTIONS.toID "
                 + "GROUP BY ACCOUNTS.accountID, ACCOUNTS.accountName, ACCOUNTS.address, ACCOUNTS.contact, ACCOUNTS.email");
-        } catch(Exception e){ System.out.println(e); }   
+        } catch(Exception e){ System.out.println(e); }  
+        System.out.println("Table has: " + accountsTableModel.getRowCount() + "rows");
         return accountsTableModel;
     }
    
@@ -166,10 +167,11 @@ public class Home extends javax.swing.JFrame {
     
     public void setAccountsTable() {
         accountsTable.setModel(getAccountsModel());
+        System.out.println("table set");
     }
     
     public void setTransactionsTable() {
-        home.transactionsTable.setModel(home.getTransactionsModel());
+        transactionsTable.setModel(getTransactionsModel());
     }
     
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed

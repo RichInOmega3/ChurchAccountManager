@@ -167,6 +167,7 @@ public class AccountAddEdit extends javax.swing.JFrame {
 
     private void acceptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptButtonActionPerformed
         // TODO add your handling code here:
+        
         if (acceptButton.getText().equals("Add")) {
             MyFunctions.addAccount(name.getText(), address.getText(), contact.getText(), email.getText());
         } else {

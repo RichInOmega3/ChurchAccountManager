@@ -2,7 +2,6 @@ package churchaccountmanager;
 
 import java.awt.HeadlessException;
 import java.sql.SQLException;
-import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
 import javax.swing.ComboBoxModel;
@@ -14,21 +13,6 @@ import javax.swing.table.TableModel;
 
 
 public class MyFunctions {
-    private static SimpleDateFormat sdfa = new SimpleDateFormat("mmss");
-    private static SimpleDateFormat sdft = new SimpleDateFormat("YYMMDDHHmmss");
-    private static Calendar calendar = Calendar.getInstance();
-    
-    int tmpInt = 0;
-    int currentBalance;
-    int restrictedBalance;
-    private static String tmpString = null;
-
-    String[] dfs = new DateFormatSymbols().getMonths();
-    
-    int startYear = -5;
-    int endYear = 5;
-    
-    
     private static final MyFunctions myFunctions = new MyFunctions();
     
     private MyFunctions() {}
@@ -37,7 +21,16 @@ public class MyFunctions {
         return myFunctions;
     }
 
-    
+    private static boolean checkAccount(String accountName) {
+        try {
+            return ( 0 == SQL.requestTableData("SELECT "
+                    + "ACCOUNTS.accountName FROM ACCOUNTS "
+                    + "WHERE "
+                    + "ACCOUNTS.accountName = '" + accountName + "' ").getRowCount() );
+        } catch (Exception e) { System.out.println ("Account Checking Error:" + e); }
+        return false;
+    }
+        
     private static boolean checkAccount(String accountID, String accountName) {
         try {
             return ( 0 == SQL.requestTableData("SELECT "
@@ -51,28 +44,33 @@ public class MyFunctions {
     }
 
     public static void addAccount(String name, String address, String contact, String email){
-        if ( checkAccount("", name) ){
-            try {
-                calendar.setTimeInMillis(System.currentTimeMillis());
-                String accountID = name.substring(0,3) + sdfa.format(calendar.getTime());
-                SQL.runSQL("INSERT INTO ACCOUNTS VALUES('" + accountID + "', '" + name + "', '" + address + "', '" + contact + "', '" + email + "')");
-                
-                try {
-                SQL.runSQL("UPDATE TRANSACTIONS SET "
-                        + "TRANSACTIONS.fromID = '" + accountID + "' "
-                        + "Transactions.anonName = '' "
-                        + "WHERE TRANSACTIONS.anonName = '" + name + "'");
-                } catch (SQLException | HeadlessException e) {System.out.println(e);}
+        SimpleDateFormat sdfa = new SimpleDateFormat("mmss");
 
+        if (name.length() > 3) {
+            if ( checkAccount(name) ){
                 try {
-                    SQL.runSQL("UPDATE TRANSACTIONS SET "
-                            + "TRANSACTIONS.toID = '" + accountID + "' "
-                            + "WHERE TRANSACTIONS.anonName = '" + name + "'");
-                } catch (SQLException | HeadlessException e) {System.out.println(e);}  
+                    Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
+                    String accountID = name.substring(0,3) + sdfa.format(Calendar.getInstance().getTime());
+                    SQL.runSQL("INSERT INTO ACCOUNTS VALUES('" + accountID + "', '" + name + "', '" + address + "', '" + contact + "', '" + email + "')");
 
-                JOptionPane.showMessageDialog(null, "Account Added", "Account Added", JOptionPane.PLAIN_MESSAGE);
-            } catch (SQLException | HeadlessException  e){ System.out.println(e); }
-        } else { JOptionPane.showMessageDialog(null, "Accout Exists", "Account Name Already Exists", JOptionPane.ERROR_MESSAGE); }
+                    try {
+                        SQL.runSQL("UPDATE TRANSACTIONS SET "
+                                + "TRANSACTIONS.fromID = '" + accountID + "', "
+                                + "Transactions.anonName = '' "
+                                + "WHERE TRANSACTIONS.anonName = '" + name + "'");
+                    } catch (SQLException | HeadlessException e) {System.out.println("1" + e);}
+
+                    try {
+                        SQL.runSQL("UPDATE TRANSACTIONS SET "
+                                + "TRANSACTIONS.toID = '" + accountID + "', "
+                                + "Transactions.anonName = '' "
+                                + "WHERE TRANSACTIONS.anonName = '" + name + "'");
+                    } catch (SQLException | HeadlessException e) {System.out.println("2" + e);}  
+
+                    JOptionPane.showMessageDialog(null, "Account Added", "Account Added", JOptionPane.PLAIN_MESSAGE);
+                } catch (SQLException | HeadlessException  e){ System.out.println(e); }
+            } else { JOptionPane.showMessageDialog(null, "Accout Exists", "Account Name Already Exists", JOptionPane.ERROR_MESSAGE); }
+        } else { JOptionPane.showMessageDialog(null, "Name too short", "Name Too Short", JOptionPane.ERROR_MESSAGE); }
     }
 
     public static void editAccount(String oldName, String accountID, String newName, String address, String contact, String email) {
@@ -93,7 +91,8 @@ public class MyFunctions {
     }
     
     public static void addTransaction(String transactionDate, String toAccount, String fromAccount, String amount, String note){
-        calendar.setTimeInMillis(System.currentTimeMillis());
+        SimpleDateFormat sdft = new SimpleDateFormat("YYMMDDHHmmss");
+        Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
         String toID = "";
         String fromID = "";
         String anonName = "";
@@ -116,7 +115,7 @@ public class MyFunctions {
         
         try {
             SQL.runSQL("INSERT INTO TRANSACTIONS VALUES('" 
-                    + sdft.format(calendar.getTime()) + "', " 
+                    + sdft.format(Calendar.getInstance().getTime()) + "', " 
                     + "TO_DATE ('" + transactionDate + "', 'DDMMYYYY'), '" 
                     + toID + "', '" 
                     + fromID + "', '" 
@@ -129,16 +128,7 @@ public class MyFunctions {
         
     public static void editTransaction(String target, String transactionDate,String toAccount, String fromAccount, String amount, String note){
         try {
-            String accountID = SQL.requestTableData("SELECT ACCOUNTS.accountID FROM ACCOUNTS WHERE ACCOUNTS.accountName = '" + fromAccount+ "'").getValueAt(0,0).toString();
-            SQL.runSQL("INSERT INTO TRANSACTIONS VALUES('" 
-                    + sdft.format(calendar.getTime()) + "', '" 
-                    + "TO_DATE (" + transactionDate + ", DDMMYYYY)', '" 
-                    + toAccount + "', '" 
-                    + fromAccount + "', '" 
-                    + amount + "', '" 
-                    + note + "', '" 
-                    + accountID + "')");
-            JOptionPane.showMessageDialog(null, "Transaction Added", "Transaction Added", JOptionPane.PLAIN_MESSAGE);
+
         } catch (Exception  e){ System.out.println(e); }
     }
 
@@ -149,7 +139,9 @@ public class MyFunctions {
             if (JOptionPane.showConfirmDialog(null,"Confirm Delete","Deleting ID: " + target, JOptionPane.YES_NO_OPTION) == 0) {   
                 if ( table == 0 ) 
                     try {
-                        SQL.runSQL("UPDATE TRANSACTIONS SET TRANSACTIONS.accountID = 'Anonymous' WHERE TRANSACTIONS.accountID = '" + target + "'");
+                        SQL.runSQL("UPDATE TRANSACTIONS SET TRANSACTIONS.toID = 'Anonymous' WHERE TRANSACTIONS.toID = '" + target + "'");
+                        SQL.runSQL("UPDATE TRANSACTIONS SET TRANSACTIONS.fromID = 'Anonymous' WHERE TRANSACTIONS.fromID = '" + target + "'");
+
                         SQL.runSQL("DELETE FROM ACCOUNTS WHERE ACCOUNTS.accountID = '" + target + "'");
                     } catch(Exception e){ System.out.println("ACCOUNT ID ERROR: " + e); }
                 else {
@@ -183,10 +175,15 @@ public class MyFunctions {
     public ComboBoxModel populateYears(){
         DefaultComboBoxModel tmpDComboBoxModel = new DefaultComboBoxModel();
         ComboBoxModel tmpComboBoxModel;
-        calendar.setTimeInMillis(System.currentTimeMillis());
+            
+        int startYear = -5;
+        int endYear = 5;
+        
+        Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
         tmpDComboBoxModel.removeAllElements();
+        
         for ( int cbxStart = startYear ; cbxStart < endYear ; cbxStart++){
-            tmpDComboBoxModel.addElement(calendar.get(Calendar.YEAR) + cbxStart);
+            tmpDComboBoxModel.addElement(Calendar.getInstance().get(Calendar.YEAR) + cbxStart);
         }
         tmpComboBoxModel = tmpDComboBoxModel;
         return tmpComboBoxModel;
@@ -196,12 +193,12 @@ public class MyFunctions {
         DefaultComboBoxModel tmpDComboBoxModel = new DefaultComboBoxModel();
         ComboBoxModel tmpComboBoxModel;
         
-        calendar.set(Calendar.YEAR, selectedYear);
-        calendar.set(Calendar.MONTH, selectedMonth);
+        Calendar.getInstance().set(Calendar.YEAR, selectedYear);
+        Calendar.getInstance().set(Calendar.MONTH, selectedMonth);
         
-        int daysOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int daysOfMonth = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
         
-        calendar.setTimeInMillis(System.currentTimeMillis());
+        Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
         
         tmpDComboBoxModel.removeAllElements();
         for ( int cbxStart = 0 ; cbxStart < daysOfMonth ; cbxStart++){   
@@ -213,9 +210,9 @@ public class MyFunctions {
     }
     
     public ComboBoxModel populateDays(){
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        int selectedYear = calendar.get(Calendar.YEAR);
-        int selectedMonth = calendar.get(Calendar.MONTH);
+        Calendar.getInstance().setTimeInMillis(System.currentTimeMillis());
+        int selectedYear = Calendar.getInstance().get(Calendar.YEAR);
+        int selectedMonth = Calendar.getInstance().get(Calendar.MONTH);
         return repopulateDays(selectedYear, selectedMonth);
     } 
 }
