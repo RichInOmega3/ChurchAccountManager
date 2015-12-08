@@ -5,7 +5,8 @@ import javax.swing.table.TableModel;
 
 public class Home extends javax.swing.JFrame {
     
-    private static Home home = new Home();   
+    private static Home home;  
+    
     private Home() {
         initComponents();
         updateAccountsTable();
@@ -125,7 +126,8 @@ public class Home extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-   
+
+            
     private String target = "";
     private int selectedTable = 1;
     
@@ -144,6 +146,7 @@ public class Home extends javax.swing.JFrame {
                 + "GROUP BY ACCOUNTS.accountID, ACCOUNTS.accountName, ACCOUNTS.address, ACCOUNTS.contact, ACCOUNTS.email");
         } catch(Exception e){ System.out.println(e); }
         accountsTable.setModel(accountsTableModel);
+        accountsTable.removeColumn(accountsTable.getColumnModel().getColumn(0));
     }
    
     public void updateTransactionsTable() { 
@@ -152,15 +155,18 @@ public class Home extends javax.swing.JFrame {
             transactionsTableModel = SQL.requestTableData("SELECT "
                 + "TRANSACTIONS.transactionID, "
                 + "TRANSACTIONS.transactionDate, "
-                + "ACCOUNTS.accountName AS CASH_TO, "
-                + "ACCOUNTS.accountName AS CASH_FROM, "
+                + "TRANSACTIONS.toID AS CASH_TO, "
+                + "TRANSACTIONS.fromID AS CASH_FROM, "
                 + "TRANSACTIONS.amount, "
                 + "TRANSACTIONS.note "
                     
-                + "FROM TRANSACTIONS LEFT JOIN ACCOUNTS "
-                + "ON TRANSACTIONS.toID = ACCOUNTS.accountID OR TRANSACTIONS.fromID = ACCOUNTS.accountID") ;
+                + "FROM TRANSACTIONS "
+                    + "LEFT JOIN ACCOUNTS ON TRANSACTIONS.toID = ACCOUNTS.accountID "
+                    + "LEFT JOIN ACCOUNTS ON TRANSACTIONS.fromID = ACCOUNTS.accountID " 
+            ) ;
         }catch(Exception e){ System.out.println(e); }
         transactionsTable.setModel(transactionsTableModel);
+        transactionsTable.removeColumn(transactionsTable.getColumnModel().getColumn(0));
     }
     
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
@@ -177,8 +183,7 @@ public class Home extends javax.swing.JFrame {
             switch(selectedTable){
                 case 0: AccountAddEdit.execEditInstance(target); break;
                 case 1: TransactionAddEdit.execEditInstance(target); break;
-            }
-                
+            }       
         editButton.setEnabled(false);
         deleteButton.setEnabled(false);
     }//GEN-LAST:event_editButtonActionPerformed
@@ -212,7 +217,7 @@ public class Home extends javax.swing.JFrame {
         target = "";
         int selectedRow = transactionsTable.getSelectedRow();
         if (selectedRow >= 0) {
-            target = transactionsTable.getValueAt(selectedRow, 0).toString();
+            target = transactionsTable.getModel().getValueAt(selectedRow, 0).toString();
             editButton.setEnabled(true);
             deleteButton.setEnabled(true);
         }
@@ -224,7 +229,7 @@ public class Home extends javax.swing.JFrame {
         target = "";
         int selectedRow = accountsTable.getSelectedRow();
         if (selectedRow >= 0) {
-            target = accountsTable.getValueAt(selectedRow, 0).toString();
+            target = accountsTable.getModel().getValueAt(selectedRow, 0).toString();
             editButton.setEnabled(true);
             deleteButton.setEnabled(true);
         }
@@ -257,7 +262,8 @@ public class Home extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Home().setVisible(true);
+                home = new Home();
+                home.setVisible(true);
             }
         });
     }

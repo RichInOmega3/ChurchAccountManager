@@ -29,27 +29,34 @@ public class TransactionAddEdit extends javax.swing.JFrame {
 
     public static void execEditInstance(String target) {
         Calendar calendar = Calendar.getInstance();
-
+        SimpleDateFormat fromSQL = new SimpleDateFormat("yyyy-MM-dd");
         String oldToAccount = "";
         String oldFromAccount = "";
         String oldAmount = "";
         String oldNote = "";
         Date sqlDate = new Date();
+
         try {
-
-        SimpleDateFormat fromSQL = new SimpleDateFormat("yyyy-MM-dd");
-
-
             TableModel targetTransaction = populateEditTransaction(target);
-
+            
+            if ( targetTransaction.getValueAt(0, 1) != null )
             sqlDate = fromSQL.parse(targetTransaction.getValueAt(0, 1).toString()); 
-
+            
+            if ( targetTransaction.getValueAt(0, 2) != null )
             oldToAccount = targetTransaction.getValueAt(0, 2).toString();
+            
+            if ( targetTransaction.getValueAt(0, 3) != null )
             oldFromAccount = targetTransaction.getValueAt(0, 3).toString();
+            
+            if ( targetTransaction.getValueAt(0, 4) != null )
             oldAmount = targetTransaction.getValueAt(0, 4).toString();
+            
+            if ( targetTransaction.getValueAt(0, 5) != null )
             oldNote = targetTransaction.getValueAt(0, 5).toString();
+            
         } catch (Exception e) { System.out.println(e); }
         calendar.setTime(sqlDate);
+        
 
         transactionID = target;
         transactionAddEdit.years.setSelectedItem(calendar.get(Calendar.YEAR));
@@ -63,6 +70,7 @@ public class TransactionAddEdit extends javax.swing.JFrame {
         transactionAddEdit.acceptButton.setText("Save");
         transactionAddEdit.setTitle("Edit");
         transactionAddEdit.setVisible(true);
+        
     }
     
     private static DefaultTableModel populateEditTransaction (String target) {
@@ -237,6 +245,7 @@ public class TransactionAddEdit extends javax.swing.JFrame {
             MyFunctions.addTransaction(date, toAccount.getSelectedItem().toString(), fromAccount.getSelectedItem().toString(), amount.getText(), note.getText());
         else
             MyFunctions.editTransaction(transactionID, date, toAccount.getSelectedItem().toString(), fromAccount.getSelectedItem().toString(), amount.getText(), note.getText());
+        Home.getInstance().updateTransactionsTable();
     }//GEN-LAST:event_acceptButtonActionPerformed
 
     private void monthsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monthsActionPerformed

@@ -38,8 +38,8 @@ public class MyFunctions {
         } catch (Exception e) { System.out.println ("Account Checking Error:" + e); }
         return false;
     }
-
-    public static void addAccount(String name, String address, String contact, String email){
+    
+    public static boolean addAccount(String name, String address, String contact, String email){
         SimpleDateFormat sdfa = new SimpleDateFormat("mmss");
 
         if (name.length() > 3) {
@@ -62,14 +62,21 @@ public class MyFunctions {
                                 + "Transactions.anonName = '' "
                                 + "WHERE TRANSACTIONS.anonName = '" + name + "'");
                     } catch (SQLException | HeadlessException e) {System.out.println("2" + e);}  
-
+                    do {
+                        try {
+                            Thread.sleep(250);
+                        } catch (Exception e) { System.out.println("Delay Error: " + e);}
+                    } while (!isAccountExists(accountID, name));
+                    
                     JOptionPane.showMessageDialog(null, "Account Added", "Account Added", JOptionPane.PLAIN_MESSAGE);
+                    return true;
                 } catch (SQLException | HeadlessException  e){ System.out.println(e); }
             } else { JOptionPane.showMessageDialog(null, "Accout Exists", "Account Name Already Exists", JOptionPane.ERROR_MESSAGE); }
         } else { JOptionPane.showMessageDialog(null, "Name too short", "Name Too Short", JOptionPane.ERROR_MESSAGE); }
+        return false;
     }
 
-    public static void editAccount(String oldName, String accountID, String newName, String address, String contact, String email) {
+    public static boolean editAccount(String oldName, String accountID, String newName, String address, String contact, String email) {
         if( isAccountExists (accountID, newName) ) {
             try{ 
                 SQL.runSQL("UPDATE ACCOUNTS SET "
@@ -79,11 +86,19 @@ public class MyFunctions {
                           + "ACCOUNTS.email = '" + email + "'  "
                           + "WHERE ACCOUNTS.accountID = '" + accountID + "'");
             } catch (SQLException | HeadlessException e) {System.out.println(e);} 
+            
+            do {
+                try {
+                    Thread.sleep(250);
+                } catch (Exception e) { System.out.println("Delay Error: " + e);}
+            } while (!isAccountExists(accountID, newName));
 
             JOptionPane.showMessageDialog(null, "Account Updated", "Account has been Updated!", JOptionPane.PLAIN_MESSAGE);
+            return true;
         } else {
             JOptionPane.showMessageDialog(null, "NAME TAKEN", newName + " is Taken!", JOptionPane.PLAIN_MESSAGE);
         }
+        return false;
     }
     
     public static void addTransaction(String transactionDate, String toAccount, String fromAccount, String amount, String note){
@@ -124,6 +139,7 @@ public class MyFunctions {
         
     public static void editTransaction(String target, String transactionDate,String toAccount, String fromAccount, String amount, String note){
         try {
+            SQL.runSQL("");
 
         } catch (Exception  e){ System.out.println(e); }
     }

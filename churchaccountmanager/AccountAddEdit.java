@@ -3,7 +3,7 @@ package churchaccountmanager;
 import javax.swing.table.TableModel;
 
 public class AccountAddEdit extends javax.swing.JFrame {
-    
+    public static boolean tableUpdated ;
     private static String accountID;
     private static String oldName;
 
@@ -13,6 +13,8 @@ public class AccountAddEdit extends javax.swing.JFrame {
         initComponents();
     }
 
+    public static AccountAddEdit getInstance() {
+    }
     public static void execAddInstance() {
         accountAddEdit.acceptButton.setText("Add");
         accountAddEdit.setTitle("Add");
