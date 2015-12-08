@@ -14,6 +14,7 @@ public class Home extends javax.swing.JFrame {
     }
     public static Home getInstance() {
         return home;
+		//test insert
     }
 
     @SuppressWarnings("unchecked")
