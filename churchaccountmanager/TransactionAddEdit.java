@@ -3,6 +3,7 @@ package churchaccountmanager;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -15,6 +16,10 @@ public class TransactionAddEdit extends javax.swing.JFrame {
     private TransactionAddEdit() {
         initComponents();
     }
+    
+    public boolean isNumeric(String s) {
+    return java.util.regex.Pattern.matches("\\d+", s);
+}
 
     public static void execAddInstance() {
         Calendar calendar = Calendar.getInstance();
@@ -239,13 +244,21 @@ public class TransactionAddEdit extends javax.swing.JFrame {
     private void acceptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptButtonActionPerformed
         // TODO add your handling code here:
         String date = days.getSelectedItem() + String.valueOf(months.getSelectedIndex() + 1) + years.getSelectedItem();
+        String toName = toAccount.getSelectedItem().toString();
+        String fromName = fromAccount.getSelectedItem().toString();
+        String amt = amount.getText();
+        String nt = note.getText();
+        
         if (date.length() < 8)
             date = "0" + date;
-        if (acceptButton.getText().equals("Add"))
-            MyFunctions.addTransaction(date, toAccount.getSelectedItem().toString(), fromAccount.getSelectedItem().toString(), amount.getText(), note.getText());
-        else
-            MyFunctions.editTransaction(transactionID, date, toAccount.getSelectedItem().toString(), fromAccount.getSelectedItem().toString(), amount.getText(), note.getText());
-        Home.getInstance().updateTransactionsTable();
+
+        if (isNumeric(amt)){
+            if (acceptButton.getText().equals("Add"))
+                MyFunctions.addTransaction(date, toName, fromName, amt, nt);
+            else
+                MyFunctions.editTransaction(transactionID, date, toName, fromName.toString(), amt, nt);
+            Home.getInstance().updateTransactionsTable();
+        } else { JOptionPane.showMessageDialog(null, "TRANSACTION AMOUNT REQUIRED", "MISSING FIELD", JOptionPane.ERROR_MESSAGE);}
     }//GEN-LAST:event_acceptButtonActionPerformed
 
     private void monthsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monthsActionPerformed

@@ -110,7 +110,7 @@ public class MyFunctions {
         String tmp;
         try {            
             tmp = SQL.requestTableData("SELECT ACCOUNTS.accountID FROM ACCOUNTS WHERE ACCOUNTS.accountName = '" + toAccount + "'").getValueAt(0,0).toString();
-            if (tmp.length() > 0)
+            if ((!tmp.isEmpty())&&(tmp.length() > 0))
                 toID = tmp;
             else
                 anonName = toAccount;
@@ -118,7 +118,7 @@ public class MyFunctions {
         
         try {
             tmp =  SQL.requestTableData("SELECT ACCOUNTS.accountID FROM ACCOUNTS WHERE ACCOUNTS.accountName = '" + fromAccount + "'").getValueAt(0,0).toString();
-            if (tmp.length() > 0)
+            if ((!tmp.isEmpty())&&(tmp.length() > 0))
                 fromID = tmp;
             else
                 anonName = fromAccount;
@@ -149,8 +149,9 @@ public class MyFunctions {
             try {
                 SQL.runSQL("DELETE FROM TRANSACTIONS WHERE TRANSACTIONS.transactionID = '" + target + "'");
             }catch(Exception e){ System.out.println("TRANSACTION ID ERROR: " + e); }
-
+            
             JOptionPane.showMessageDialog(null, "Record Deleted.", "RECORD DELETED", JOptionPane.PLAIN_MESSAGE);
+            Home.getInstance().updateTransactionsTable();
         }
     }
     
@@ -164,6 +165,7 @@ public class MyFunctions {
                         SQL.runSQL("UPDATE TRANSACTIONS SET TRANSACTIONS.fromID = 'Anonymous' WHERE TRANSACTIONS.fromID = '" + target + "'");
                         SQL.runSQL("DELETE FROM ACCOUNTS WHERE ACCOUNTS.accountID = '" + target + "'");
                 } catch(Exception e){ System.out.println("ACCOUNT ID ERROR: " + e); }
+            Home.getInstance().updateAccountsTable();
             }
         }
     }

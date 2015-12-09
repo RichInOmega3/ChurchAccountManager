@@ -14,6 +14,7 @@ public class AccountAddEdit extends javax.swing.JFrame {
     }
 
     public static AccountAddEdit getInstance() {
+        return accountAddEdit;
     }
     public static void execAddInstance() {
         accountAddEdit.acceptButton.setText("Add");

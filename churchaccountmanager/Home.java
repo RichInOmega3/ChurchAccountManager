@@ -3,6 +3,9 @@ package churchaccountmanager;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 public class Home extends javax.swing.JFrame {
     
     private static Home home;  
@@ -192,13 +195,9 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
         switch (selectedTable) {
             case 0:
-                MyFunctions.deleteAccount(target);
-                updateAccountsTable();
-                break;
+                MyFunctions.deleteAccount(target); break;
             case 1:
-                MyFunctions.deleteTransaction(target);
-                updateTransactionsTable();
-                break;
+                MyFunctions.deleteTransaction(target); break;
         }        
         editButton.setEnabled(false);
         deleteButton.setEnabled(false);
@@ -217,6 +216,7 @@ public class Home extends javax.swing.JFrame {
         target = "";
         int selectedRow = transactionsTable.getSelectedRow();
         if (selectedRow >= 0) {
+            selectedRow = transactionsTable.convertRowIndexToModel(selectedRow);
             target = transactionsTable.getModel().getValueAt(selectedRow, 0).toString();
             editButton.setEnabled(true);
             deleteButton.setEnabled(true);
@@ -229,6 +229,7 @@ public class Home extends javax.swing.JFrame {
         target = "";
         int selectedRow = accountsTable.getSelectedRow();
         if (selectedRow >= 0) {
+            selectedRow = accountsTable.convertRowIndexToModel(selectedRow);
             target = accountsTable.getModel().getValueAt(selectedRow, 0).toString();
             editButton.setEnabled(true);
             deleteButton.setEnabled(true);
