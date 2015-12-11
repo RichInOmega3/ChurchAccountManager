@@ -35,7 +35,8 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane1" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="qp" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="acceptButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="cancelButton" min="-2" max="-2" attributes="0"/>
@@ -111,6 +112,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="acceptButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cancelButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="qp" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -126,9 +128,6 @@
     <Component class="javax.swing.JComboBox" name="toAccount">
       <Properties>
         <Property name="editable" type="boolean" value="true"/>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="MyFunctions.populateAccounts()" type="code"/>
-        </Property>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -198,9 +197,6 @@
     <Component class="javax.swing.JComboBox" name="fromAccount">
       <Properties>
         <Property name="editable" type="boolean" value="true"/>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="MyFunctions.populateAccounts()" type="code"/>
-        </Property>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -246,6 +242,14 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Note:"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="qp">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="quickpop"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="qpActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

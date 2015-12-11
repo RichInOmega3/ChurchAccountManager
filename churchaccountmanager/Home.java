@@ -1,17 +1,42 @@
 package churchaccountmanager;
 
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableRowSorter;
 
 public class Home extends javax.swing.JFrame {
     
     private static Home home;  
+    TableRowSorter<DefaultTableModel> sorter;
+
     
     private Home() {
         initComponents();
+        accountsTable.setAutoCreateRowSorter(true);
+        transactionsTable.setAutoCreateRowSorter(true);
+        searchTargetText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                filterTable(searchTargetText.getText());
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                filterTable(searchTargetText.getText());
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                filterTable(searchTargetText.getText());
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        
+        });
         updateAccountsTable();
         updateTransactionsTable();
     }
@@ -61,6 +86,12 @@ public class Home extends javax.swing.JFrame {
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
+            }
+        });
+
+        searchTargetText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchTargetTextActionPerformed(evt);
             }
         });
 
@@ -134,6 +165,29 @@ public class Home extends javax.swing.JFrame {
     private String target = "";
     private int selectedTable = 1;
     
+    public void filterTable(String filterKey) {
+
+        
+        RowFilter<DefaultTableModel, Object> rf = null;
+            try {
+                rf = RowFilter.regexFilter(filterKey);
+            } catch(java.util.regex.PatternSyntaxException ex) {
+                return;
+            }
+            switch(selectedTable) {
+            case 0:
+                sorter = new TableRowSorter(accountsTable.getModel());
+                sorter.setRowFilter(rf);
+                accountsTable.setRowSorter(sorter);
+                break;
+            case 1:
+                sorter = new TableRowSorter(transactionsTable.getModel());
+                sorter.setRowFilter(rf);
+                transactionsTable.setRowSorter(sorter);
+                ;break;
+            }
+    }
+    
     public void updateAccountsTable() {
         TableModel accountsTableModel = new DefaultTableModel();
         try{            
@@ -143,10 +197,29 @@ public class Home extends javax.swing.JFrame {
                 + "ACCOUNTS.address AS ADDRESS, "
                 + "ACCOUNTS.contact AS CONTACT, "
                 + "ACCOUNTS.email AS EMAIL, "
-                + "SUM(TRANSACTIONS.amount) AS BALANCE "
-                + "FROM ACCOUNTS LEFT JOIN TRANSACTIONS "
-                + "ON ACCOUNTS.accountID = TRANSACTIONS.toID "
-                + "GROUP BY ACCOUNTS.accountID, ACCOUNTS.accountName, ACCOUNTS.address, ACCOUNTS.contact, ACCOUNTS.email");
+                    
+                + "t.TOAMT AS RECIEVED, "
+                + "f.FROMAMT AS GIVEN, "
+                + "t.TOAMT - f.FROMAMT AS BALANCE "
+                + "FROM ACCOUNTS "
+                    
+                + "LEFT JOIN "
+                + "("
+                + "SELECT toID, SUM(amount) AS TOAMT "
+                + "FROM TRANSACTIONS "
+                + "GROUP BY toID "
+                + ") t "
+                + "ON t.toID = ACCOUNTS.accountID "
+
+                + "LEFT JOIN "
+                + "("
+                + "SELECT fromID, SUM(amount) AS FROMAMT "
+                + "FROM TRANSACTIONS "
+                + "GROUP BY fromID "
+                + ") f "
+                + "ON f.fromID = ACCOUNTS.accountID "
+
+                + "");
         } catch(Exception e){ System.out.println(e); }
         accountsTable.setModel(accountsTableModel);
         accountsTable.removeColumn(accountsTable.getColumnModel().getColumn(0));
@@ -158,14 +231,14 @@ public class Home extends javax.swing.JFrame {
             transactionsTableModel = SQL.requestTableData("SELECT "
                 + "TRANSACTIONS.transactionID, "
                 + "TRANSACTIONS.transactionDate, "
-                + "TRANSACTIONS.toID AS CASH_TO, "
-                + "TRANSACTIONS.fromID AS CASH_FROM, "
+                + "toAcc.AccountName AS CASH_TO, "
+                + "fromAcc.AccountName AS CASH_FROM, "
                 + "TRANSACTIONS.amount, "
                 + "TRANSACTIONS.note "
                     
                 + "FROM TRANSACTIONS "
-                    + "LEFT JOIN ACCOUNTS ON TRANSACTIONS.toID = ACCOUNTS.accountID "
-                    + "LEFT JOIN ACCOUNTS ON TRANSACTIONS.fromID = ACCOUNTS.accountID " 
+                    + "LEFT JOIN ACCOUNTS toAcc ON TRANSACTIONS.toID = toAcc.accountID "
+                    + "LEFT JOIN ACCOUNTS fromAcc ON TRANSACTIONS.fromID = fromAcc.accountID " 
             ) ;
         }catch(Exception e){ System.out.println(e); }
         transactionsTable.setModel(transactionsTableModel);
@@ -203,25 +276,18 @@ public class Home extends javax.swing.JFrame {
         deleteButton.setEnabled(false);
     }//GEN-LAST:event_deleteButtonActionPerformed
     
+    private void searchTargetTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTargetTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchTargetTextActionPerformed
+
     private void viewTablesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewTablesMouseClicked
         // TODO add your handling code here:
+        updateAccountsTable();
+        updateTransactionsTable();
         selectedTable = viewTables.getSelectedIndex();
         editButton.setEnabled(false);
         deleteButton.setEnabled(false);
     }//GEN-LAST:event_viewTablesMouseClicked
-
-    private void transactionsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_transactionsTableMouseClicked
-        // TODO add your handling code here:
-        selectedTable = 1;
-        target = "";
-        int selectedRow = transactionsTable.getSelectedRow();
-        if (selectedRow >= 0) {
-            selectedRow = transactionsTable.convertRowIndexToModel(selectedRow);
-            target = transactionsTable.getModel().getValueAt(selectedRow, 0).toString();
-            editButton.setEnabled(true);
-            deleteButton.setEnabled(true);
-        }
-    }//GEN-LAST:event_transactionsTableMouseClicked
 
     private void accountsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accountsTableMouseClicked
         // TODO add your handling code here:
@@ -235,6 +301,19 @@ public class Home extends javax.swing.JFrame {
             deleteButton.setEnabled(true);
         }
     }//GEN-LAST:event_accountsTableMouseClicked
+
+    private void transactionsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_transactionsTableMouseClicked
+        // TODO add your handling code here:
+        selectedTable = 1;
+        target = "";
+        int selectedRow = transactionsTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            selectedRow = transactionsTable.convertRowIndexToModel(selectedRow);
+            target = transactionsTable.getModel().getValueAt(selectedRow, 0).toString();
+            editButton.setEnabled(true);
+            deleteButton.setEnabled(true);
+        }
+    }//GEN-LAST:event_transactionsTableMouseClicked
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

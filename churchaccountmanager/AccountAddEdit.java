@@ -1,5 +1,7 @@
 package churchaccountmanager;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.TableModel;
 
 public class AccountAddEdit extends javax.swing.JFrame {
@@ -11,6 +13,7 @@ public class AccountAddEdit extends javax.swing.JFrame {
     
     private AccountAddEdit() {
         initComponents();
+        //qp.setVisible(false);
     }
 
     public static AccountAddEdit getInstance() {
@@ -82,6 +85,7 @@ public class AccountAddEdit extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         name = new javax.swing.JTextField();
+        qp = new javax.swing.JButton();
 
         acceptButton.setText("Accept");
         acceptButton.addActionListener(new java.awt.event.ActionListener() {
@@ -108,6 +112,13 @@ public class AccountAddEdit extends javax.swing.JFrame {
         name.setText("Surname, Firstname MI.");
         name.setToolTipText("Surname, Firstname MI.");
 
+        qp.setText("quickpop");
+        qp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                qpActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -116,7 +127,8 @@ public class AccountAddEdit extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(qp)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(acceptButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton))
@@ -156,7 +168,8 @@ public class AccountAddEdit extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
-                    .addComponent(acceptButton))
+                    .addComponent(acceptButton)
+                    .addComponent(qp))
                 .addContainerGap())
         );
 
@@ -177,6 +190,23 @@ public class AccountAddEdit extends javax.swing.JFrame {
         }
         Home.getInstance().updateAccountsTable();
     }//GEN-LAST:event_acceptButtonActionPerformed
+
+    private void qpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qpActionPerformed
+        // TODO add your handling code here:
+        for(int i = 0; i <= 80; i++) {
+            name.setText("Doe, John " + i);
+            address.setText("Undisclosed");
+            contact.setText("N/A");
+            email.setText("FakeEmail" + i + "@xMail.com");
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(AccountAddEdit.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            acceptButtonActionPerformed( evt );
+        }
+
+    }//GEN-LAST:event_qpActionPerformed
 
     /**
      * @param args the command line arguments
@@ -211,7 +241,7 @@ public class AccountAddEdit extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AccountAddEdit().setVisible(true);
+                accountAddEdit.setVisible(true);
             }
         });
     }
@@ -227,5 +257,6 @@ public class AccountAddEdit extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField name;
+    private javax.swing.JButton qp;
     // End of variables declaration//GEN-END:variables
 }

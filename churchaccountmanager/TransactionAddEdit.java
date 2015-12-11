@@ -3,6 +3,9 @@ package churchaccountmanager;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -11,7 +14,7 @@ public class TransactionAddEdit extends javax.swing.JFrame {
         
     static String transactionID;
     
-    private static final TransactionAddEdit transactionAddEdit = new TransactionAddEdit();
+    private static TransactionAddEdit transactionAddEdit = new TransactionAddEdit();
 
     private TransactionAddEdit() {
         initComponents();
@@ -26,7 +29,8 @@ public class TransactionAddEdit extends javax.swing.JFrame {
         transactionAddEdit.years.setSelectedItem(calendar.get(Calendar.YEAR));
         transactionAddEdit.months.setSelectedIndex(calendar.get(Calendar.MONTH));
         transactionAddEdit.days.setSelectedItem(calendar.get(Calendar.DATE));
-
+        transactionAddEdit.toAccount.setModel(MyFunctions.populateAccounts());
+        transactionAddEdit.fromAccount.setModel(MyFunctions.populateAccounts());
         transactionAddEdit.acceptButton.setText("Add");
         transactionAddEdit.setTitle("Add");
         transactionAddEdit.setVisible(true);
@@ -104,6 +108,7 @@ public class TransactionAddEdit extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         note = new javax.swing.JTextArea();
         jLabel4 = new javax.swing.JLabel();
+        qp = new javax.swing.JButton();
 
         jToggleButton1.setText("jToggleButton1");
 
@@ -112,7 +117,6 @@ public class TransactionAddEdit extends javax.swing.JFrame {
         jLabel1.setText("To: ");
 
         toAccount.setEditable(true);
-        toAccount.setModel(MyFunctions.populateAccounts());
 
         days.setModel(MyFunctions.getDaysModel());
 
@@ -135,7 +139,6 @@ public class TransactionAddEdit extends javax.swing.JFrame {
         jLabel3.setText("From: ");
 
         fromAccount.setEditable(true);
-        fromAccount.setModel(MyFunctions.populateAccounts());
 
         acceptButton.setText("Accept");
         acceptButton.addActionListener(new java.awt.event.ActionListener() {
@@ -159,6 +162,13 @@ public class TransactionAddEdit extends javax.swing.JFrame {
 
         jLabel4.setText("Note:");
 
+        qp.setText("quickpop");
+        qp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                qpActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -168,7 +178,8 @@ public class TransactionAddEdit extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(qp)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(acceptButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton))
@@ -227,7 +238,8 @@ public class TransactionAddEdit extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(acceptButton)
-                    .addComponent(cancelButton))
+                    .addComponent(cancelButton)
+                    .addComponent(qp))
                 .addContainerGap())
         );
 
@@ -256,7 +268,7 @@ public class TransactionAddEdit extends javax.swing.JFrame {
             if (acceptButton.getText().equals("Add"))
                 MyFunctions.addTransaction(date, toName, fromName, amt, nt);
             else
-                MyFunctions.editTransaction(transactionID, date, toName, fromName.toString(), amt, nt);
+                MyFunctions.editTransaction(transactionID, date, toName, fromName, amt, nt);
             Home.getInstance().updateTransactionsTable();
         } else { JOptionPane.showMessageDialog(null, "TRANSACTION AMOUNT REQUIRED", "MISSING FIELD", JOptionPane.ERROR_MESSAGE);}
     }//GEN-LAST:event_acceptButtonActionPerformed
@@ -274,6 +286,27 @@ public class TransactionAddEdit extends javax.swing.JFrame {
         int selectedMonth = months.getSelectedIndex();
         days.setModel(MyFunctions.getDaysModel( selectedYear, selectedMonth ));
     }//GEN-LAST:event_yearsActionPerformed
+
+    private void qpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qpActionPerformed
+        // TODO add your handling code here:
+        Random ran = new Random(); 
+
+        
+        for(int i = 0; i <=200; i ++) {
+                    int n1 = ran.nextInt((81 - 79) + 1) + 79;
+                    int n2 = ran.nextInt((60 - 10) + 1) + 10;
+                    int n3 = ran.nextInt((5000 - 100) + 1) + 100;
+            toAccount.setSelectedIndex(n1);
+            fromAccount.setSelectedIndex(n2);
+            amount.setText(String.valueOf(n3));
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(TransactionAddEdit.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            acceptButtonActionPerformed( evt );
+        }
+    }//GEN-LAST:event_qpActionPerformed
 
     /**
      * @param args the command line arguments
@@ -311,8 +344,8 @@ public class TransactionAddEdit extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new TransactionAddEdit().setVisible(true);
+            public void run() {       
+                transactionAddEdit.setVisible(true);
             }
         });
     }
@@ -332,6 +365,7 @@ public class TransactionAddEdit extends javax.swing.JFrame {
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JComboBox<String> months;
     private javax.swing.JTextArea note;
+    private javax.swing.JButton qp;
     private javax.swing.JComboBox<String> toAccount;
     private javax.swing.JComboBox<String> years;
     // End of variables declaration//GEN-END:variables

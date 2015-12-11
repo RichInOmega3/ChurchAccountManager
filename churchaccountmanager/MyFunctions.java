@@ -40,13 +40,13 @@ public class MyFunctions {
     }
     
     public static boolean addAccount(String name, String address, String contact, String email){
-        SimpleDateFormat sdfa = new SimpleDateFormat("mmss");
+        SimpleDateFormat sdfa = new SimpleDateFormat("YYMMDDHHmmss");
 
         if (name.length() > 3) {
             if ( MyFunctions.isAccountExists(name) ){
                 try {
                     calendar.setTimeInMillis(System.currentTimeMillis());
-                    String accountID = name.substring(0,3) + sdfa.format(calendar.getTime());
+                    String accountID = sdfa.format(calendar.getTime());
                     SQL.runSQL("INSERT INTO ACCOUNTS VALUES('" + accountID + "', '" + name + "', '" + address + "', '" + contact + "', '" + email + "')");
 
                     try {
@@ -133,13 +133,19 @@ public class MyFunctions {
                     + amount + "', '" 
                     + note + "', '"
                     + anonName + "')");
-            JOptionPane.showMessageDialog(null, "Transaction Added", "Transaction Added", JOptionPane.PLAIN_MESSAGE);
+            //JOptionPane.showMessageDialog(null, "Transaction Added", "Transaction Added", JOptionPane.PLAIN_MESSAGE);
         } catch (Exception  e){ System.out.println(e); }
     }
         
     public static void editTransaction(String target, String transactionDate,String toAccount, String fromAccount, String amount, String note){
         try {
-            SQL.runSQL("");
+            SQL.runSQL("UPDATE TRANSACTIONS SET "
+                    + "TRANSACTIONS.transactionDate = '" + transactionDate + "' "
+                    + "TRANSACTIONS.toID = '" + toAccount + "' "
+                    + "TRANSACTIONS.fromID = '" + fromAccount + "' "
+                    + "TRANSACTIONS.amount = '" + amount + "' "
+                    + "TRANSACTIONS.note = '" +note + "' "
+                    + "WHERE TRANSACTIONS.transactionID = '" + target + "'");
 
         } catch (Exception  e){ System.out.println(e); }
     }

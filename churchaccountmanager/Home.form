@@ -109,6 +109,9 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="searchTargetText">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchTargetTextActionPerformed"/>
+      </Events>
     </Component>
     <Container class="javax.swing.JTabbedPane" name="viewTables">
       <Properties>
